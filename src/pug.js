@@ -8,6 +8,7 @@ const assign = require('lodash.assign');
 const merge = require('lodash.merge');
 const isPlainObject = require('lodash.isplainobject');
 const forIn = require('lodash.forin');
+const isObject = require('lodash.isobject');
 const userAgent = require('koa-useragent');
 const loadHelpers = require('./load-helpers');
 
@@ -159,7 +160,7 @@ function Pug(options) {
           return;
         }
 
-        if (Object.keys(options.userAgents).length) {
+        if (isObject(options.userAgents)) {
           merge(userAgents, options.userAgents);
         }
 

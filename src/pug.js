@@ -58,11 +58,15 @@ function Pug(options) {
       if (!fs.existsSync(tplPath)) {
         if (!fs.existsSync(dirname)) {
           // if dirname doesn't exist, fallback to desktop
-          tplPrefix = path.join(viewPath, userAgents.desktop);
-          tplPath = path.resolve(tplPrefix, tpl);
+          dirname = path.join(viewPath, userAgents.desktop);
+          tplPath = dirname + '.pug';
 
-        } else {
-          tplPath = path.resolve(dirname, 'index.pug');
+          if (!fs.existsSync(tplPath)) {
+            const stat = fs.statSync(dirname)
+            if (stat.isDirectory()) {
+              tplPath = path.resolve(dirname, 'index.pug')
+            }
+          }
         }
       }
     }

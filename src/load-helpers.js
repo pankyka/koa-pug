@@ -1,13 +1,11 @@
-'use strict'
+const isObject = require('lodash.isobject');
+const forIn = require('lodash.forin');
+const camelCase = require('lodash.camelcase');
+const fs = require('fs');
+const path = require('path');
 
-var isObject = require('lodash.isobject')
-var forIn = require('lodash.forin')
-var camelCase = require('lodash.camelcase')
-var fs = require('fs')
-var path = require('path')
-
-function loadHelpers (dirs) {
-  var helpers = {}
+function loadHelpers(dirs) {
+  const helpers = {};
 
   if (Array.isArray(dirs)) {
     dirs.forEach(function (item) {
@@ -15,42 +13,42 @@ function loadHelpers (dirs) {
         forIn(item, function (value, key) {
           if (typeof key === 'string') {
             if (typeof value === 'string') {
-              load(value, key)
+              load(value, key);
             } else {
-              helpers[key] = value
+              helpers[key] = value;
             }
           }
-        })
+        });
       } else if (typeof item === 'string') {
-        load(item)
+        load(item);
       }
-    })
+    });
   } else {
-    load(dirs)
+    load(dirs);
   }
 
-  function load (dir, moduleName) {
-    var fullPath = path.resolve(dir)
-    var stat = fs.statSync(fullPath)
+  function load(dir, moduleName) {
+    const fullPath = path.resolve(dir);
+    const stat = fs.statSync(fullPath);
 
     if (stat.isDirectory()) {
       fs.readdirSync(dir).forEach(function (file) {
-        load(dir + '/' + file)
-      })
+        load(dir + '/' + file);
+      });
     } else if (stat.isFile()) {
-      var mod = require(fullPath)
+      const mod = require(fullPath);
 
       if (typeof moduleName === 'string') {
-        helpers[moduleName] = mod
+        helpers[moduleName] = mod;
       } else if (typeof mod.moduleName === 'string') {
-        helpers[mod.moduleName] = mod.moduleBody
+        helpers[mod.moduleName] = mod.moduleBody;
       } else {
-        helpers[camelCase(path.basename(fullPath, path.extname(fullPath)))] = mod
+        helpers[camelCase(path.basename(fullPath, path.extname(fullPath)))] = mod;
       }
     }
   }
 
-  return helpers
+  return helpers;
 }
 
-module.exports = loadHelpers
+module.exports = loadHelpers;

@@ -32,12 +32,26 @@ function Pug(options) {
     pretty: false
   };
 
-  function getTemplatePath(tpl, tplPath) {
+  function getPrefix(userAgent) {
+
+    return userAgent.isMobile ? userAgents.mobile : userAgent.isTablet ? userAgents.tablet : userAgents.desktop;
+  }
+
+  function getTemplatePath(tpl, tplPath, userAgent) {
+    const agentPrefix = getPrefix(userAgent);
+    let tplPrefix = path.join(viewPath, agentPrefix);
+
     if (endsWith(tpl, '.pug')) {
-      tplPath = path.resolve(viewPath, tpl);
+      tplPath = path.resolve(tplPrefix, tpl);
+
+      if (!fs.existsSync(tplPath)) {
+        // fallback to desktop
+        tplPrefix = path.join(viewPath, userAgents.desktop);
+        tplPath = path.resolve(tplPrefix, tpl);
+      }
     } else {
       // If view path doesn't end with `.pug`, add `.pug` and check if it exists
-      const dirname = path.resolve(viewPath, tpl);
+      let dirname = path.resolve(tplPrefix, tpl);
       tplPath = dirname + '.pug';
 
       // If doesn't exist and the dirname is a folder, then search `index.pug` file
@@ -45,16 +59,28 @@ function Pug(options) {
         const stat = fs.statSync(dirname);
         if (stat.isDirectory()) {
           tplPath = path.resolve(dirname, 'index.pug');
+        } else {
+          // fallback to desktop
+          tplPrefix = path.join(viewPath, userAgents.desktop);
+          dirname = path.resolve(tplPrefix, tpl);
+          tplPath = dirname + '.pug';
+
+          if (!fs.existsSync(tplPath)) {
+            const stat = fs.statSync(dirname);
+            if (stat.isDirectory()) {
+              tplPath = path.resolve(dirname, 'index.pug');
+            }
+          }
         }
       }
     }
     return tplPath;
   }
 
-  function compileFile(tpl, locals, compileOptions, skipCache, userAgent) {
+  function compileFile(tpl, locals, compileOptions, skipCache) {
     let tplPath, compiler;
 
-    tplPath = getTemplatePath(tpl, tplPath);
+    tplPath = getTemplatePath(tpl, tplPath, locals.userAgent);
 
     compileOptions.filename = tplPath;
 
@@ -101,7 +127,7 @@ function Pug(options) {
       skipCache = typeof noCache === 'boolean' ? noCache : globalNoCache;
     }
 
-    return compileFile(tpl, locals, compileOptions, skipCache, this.state.userAgent);
+    return compileFile(tpl, locals, compileOptions, skipCache);
   }
 
   /**

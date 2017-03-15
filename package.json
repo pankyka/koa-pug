@@ -5,12 +5,9 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chrisyip/koa-pug.git"
+    "url": "https://github.com/pankyka/koa-pug-by-useragent.git"
   },
-  "bugs": {
-    "url": "https://github.com/chrisyip/koa-pug/issues"
-  },
-  "homepage": "https://github.com/chrisyip/koa-pug",
+  "homepage": "https://github.com/pankyka/koa-pug-by-useragent",
   "scripts": {
     "lint": "./node_modules/.bin/eslint .",
     "mocha": "node --harmony node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha --bail --check-leaks test/",
@@ -23,8 +20,8 @@
     "pug"
   ],
   "author": {
-    "name": "Chris Yip",
-    "email": "i@chrisyip.im"
+    "name": "Gabor Pankotay",
+    "email": "mrpanky@gmail.com"
   },
   "license": "MIT",
   "dependencies": {
